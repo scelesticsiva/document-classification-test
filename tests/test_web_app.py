@@ -2,8 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import csv
+import sys
 
-URL = "http://documentclassifier-env.us-east-2.elasticbeanstalk.com"
+#URL = "http://documentclassifier-env.us-east-2.elasticbeanstalk.com"
+URL = sys.argv[1]
 
 def home_page_check():
 	page = requests.get(URL)
