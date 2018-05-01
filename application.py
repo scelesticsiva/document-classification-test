@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 
 import numpy as np
 from sklearn.externals import joblib
@@ -17,17 +17,25 @@ def home():
 	return render_template("main.html")
 
 @application.route("/", methods = ["POST"])
-def predict():
+def post_predict():
 	input_text = request.form["text"]
 	test_features = vectorizer.transform([input_text]).toarray()
 	prediction = model.predict(test_features)
 	return "prediction:{0}".format(str(prediction[0]))
 
-@application.route("/<words>")
-def URL_predict(words):
-	input_text = words.split("?")
-	test_features = vectorizer.transform([words]).toarray()
-	return "prediction:{0}".format(str(model.predict(test_features)[0]))
+
+@application.route("/predict", methods = ["GET"])
+def get_predict():
+	load_model()
+	input_text = " ".join(request.args.get("words").split("-"))
+	test_features = vectorizer.transform([input_text]).toarray()
+	return "prediction:{0}".format(str(model.predict(test_features)[0])) 
+
+@application.route("/jsonify",methods = ["GET"])
+def jsonify_get_predict():
+	input_text = " ".join(request.args.get("words").split("-"))
+	test_features = vectorizer.transform([input_text]).toarray()
+	return jsonify(prediction = str(model.predict(test_features)[0]))
 
 def load_model():
 	global vectorizer
